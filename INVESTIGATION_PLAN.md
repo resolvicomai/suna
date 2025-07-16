@@ -41,9 +41,15 @@ Fazer o deploy bem-sucedido da aplicação Suna (backend, frontend, worker e Red
     *   `frontend/Dockerfile` atualizado para usar `node:20-alpine`, garantir a instalação de todas as dependências e adicionar um comando `CMD`.
     *   `docker-compose.railway.yml` atualizado para remover o `healthcheck` do frontend.
 
-3.  **Novo Deploy e Verificação:**
-    *   Realizar um novo deploy com as correções aplicadas.
-    *   Verificar os health checks e a funcionalidade da aplicação para confirmar que o problema foi resolvido.
+3.  **Verificação no Painel do Railway:**
+    *   Acessar as configurações de cada serviço (`frontend`, `backend`) no painel do Railway.
+    *   Confirmar que a opção "Build Method" está configurada para "Dockerfile".
+    *   Verificar se o "Dockerfile Path" aponta para o local correto (ex: `frontend/Dockerfile` e `backend/Dockerfile`).
+    *   Garantir que o "Root Directory" está configurado corretamente (geralmente `/` se os caminhos do Dockerfile forem relativos à raiz).
+
+4.  **Novo Deploy e Verificação:**
+    *   Realizar um novo deploy para o Railway com as correções aplicadas.
+    *   Monitorar os logs de build e de execução para confirmar que os erros foram resolvidos.
 
 ## Próximos Passos
 
