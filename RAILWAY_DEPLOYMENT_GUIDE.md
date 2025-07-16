@@ -48,3 +48,17 @@ Esta é a **única parte** que você precisa fazer manualmente, pois envolve seg
 Para tornar seu site público, vá para a aba **Settings** do serviço `frontend` e clique em **Generate Domain**. A URL gerada será o endereço público do seu site.
 
 É isso! O processo agora é 90% automático.
+
+---
+
+### **Solução de Problemas (IMPORTANTE!)**
+
+**Erro: "Nixpacks build failed"**
+
+Se você vir este erro, significa que o Railway **NÃO** leu o arquivo `railway.json`. Isso quase sempre acontece porque você está tentando reimplantar um projeto antigo.
+
+**Solução:**
+1.  **Delete completamente o projeto antigo** no painel do Railway.
+2.  Siga o "Passo 2" deste guia novamente e **crie um projeto totalmente novo** a partir do seu repositório do GitHub.
+
+Um novo projeto forçará o Railway a escanear o repositório do zero, encontrar o `railway.json` e configurar tudo corretamente.
