@@ -30,15 +30,5 @@
       "healthcheckPath": "/",
       "healthcheckTimeout": 300
     }
-  ],
-  "plugins": [
-    {
-      "name": "redis",
-      "source": "redis"
-    },
-    {
-      "name": "rabbitmq",
-      "source": "rabbitmq"
-    }
   ]
 }

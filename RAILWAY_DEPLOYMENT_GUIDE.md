@@ -1,64 +1,62 @@
-# Guia de Deploy do Projeto Suna no Railway (Versão Automatizada)
+# Guia de Deploy do Projeto Suna no Railway (Versão Híbrida - A Mais Segura)
 
-Olá! Com o novo arquivo `railway.json` adicionado ao projeto, o processo de deploy se tornou muito mais simples. Agora, o Railway irá configurar quase tudo automaticamente.
+Olá! Após alguns problemas, chegamos a uma solução mais robusta que tem a maior chance de sucesso.
 
-**O que o arquivo `railway.json` faz?**
-Ele instrui o Railway a criar e configurar todos os 5 serviços necessários (Redis, RabbitMQ, Backend, Worker e Frontend) sem que você precise fazer isso manualmente.
-
----
-
-### **Processo de Deploy (Agora Simplificado)**
-
-**Passo 1: Faça o Commit e Push**
-
-Certifique-se de que os novos arquivos (`railway.json` e este guia atualizado) sejam enviados para o seu repositório no GitHub.
-
-```bash
-git add railway.json RAILWAY_DEPLOYMENT_GUIDE.md
-git commit -m "Adicionar configuração de deploy automatizado para o Railway"
-git push
-```
-
-**Passo 2: Crie o Projeto no Railway**
-
-1.  Acesse sua conta no [Railway](https://railway.app/).
-2.  Na tela principal, clique em **New Project**.
-3.  Escolha a opção **Deploy from GitHub repo**.
-4.  Selecione o repositório do seu projeto Suna.
-5.  **Mágica!** O Railway encontrará e lerá o arquivo `railway.json`. Ele começará a criar todos os 5 serviços automaticamente. Aguarde alguns minutos enquanto ele constrói e implanta tudo.
+**O que vamos fazer:**
+Usaremos o arquivo `railway.json` para criar automaticamente os serviços principais (Backend, Worker, Frontend). Os serviços de apoio (Redis e RabbitMQ) serão adicionados manualmente, pois isso evita um bug na plataforma Railway que parece estar ignorando a configuração completa.
 
 ---
 
-### **Passo 3: Configure as Variáveis de Ambiente (Única Tarefa Manual)**
+### **Passo 1: Faça o Commit e Push**
 
-Esta é a **única parte** que você precisa fazer manualmente, pois envolve segredos e chaves de API que não devem estar no código.
-
-1.  No seu painel do Railway, você verá os 5 serviços criados. Clique em cada um deles (`backend`, `worker`, `frontend`) e vá para a aba **Variables**.
-2.  **Para o `backend` e `worker`:**
-    -   O Railway já terá conectado o Redis e o RabbitMQ.
-    -   Você precisa adicionar as outras variáveis que estão no arquivo `backend/.env.example`. Para cada linha como `NOME=valor` nesse arquivo, crie uma nova variável no Railway com o `NOME` e o `valor` correspondente.
-3.  **Para o `frontend`:**
-    -   Crie uma variável chamada `NEXT_PUBLIC_API_URL`. O valor dela será o endereço do seu backend. O Railway cria essa variável para você. Clique no campo de valor e selecione a variável que se parece com `${{backend.RAILWAY_PRIVATE_DOMAIN}}` ou `${{backend.RAILWAY_PUBLIC_DOMAIN}}`.
-    -   Adicione as outras variáveis que estão no arquivo `frontend/.env.example`.
+Certifique-se de que as últimas alterações neste repositório foram enviadas para o seu GitHub.
 
 ---
 
-### **Passo 4: Acesse sua Aplicação**
+### **Passo 2: Crie um Projeto NOVO no Railway (Importante!)**
 
-Para tornar seu site público, vá para a aba **Settings** do serviço `frontend` e clique em **Generate Domain**. A URL gerada será o endereço público do seu site.
-
-É isso! O processo agora é 90% automático.
+1.  **DELETE o projeto antigo** no Railway para evitar qualquer conflito.
+2.  Acesse sua conta no [Railway](https://railway.app/).
+3.  Na tela principal, clique em **New Project**.
+4.  Escolha a opção **Deploy from GitHub repo**.
+5.  Selecione o repositório do seu projeto Suna.
+6.  O Railway irá ler o `railway.json` e criar automaticamente os 3 serviços: `backend`, `worker`, e `frontend`.
 
 ---
 
-### **Solução de Problemas (IMPORTANTE!)**
+### **Passo 3: Adicione o Redis e o RabbitMQ Manualmente**
 
-**Erro: "Nixpacks build failed"**
+Agora que os serviços principais existem, vamos adicionar os de apoio:
 
-Se você vir este erro, significa que o Railway **NÃO** leu o arquivo `railway.json`. Isso quase sempre acontece porque você está tentando reimplantar um projeto antigo.
+1.  No painel do seu projeto, clique no botão **+ New**.
+2.  Na caixa de busca, digite **Redis** e adicione-o.
+3.  Clique em **+ New** novamente, procure por **RabbitMQ** e adicione-o.
 
-**Solução:**
-1.  **Delete completamente o projeto antigo** no painel do Railway.
-2.  Siga o "Passo 2" deste guia novamente e **crie um projeto totalmente novo** a partir do seu repositório do GitHub.
+Ao final, você terá os 5 serviços no seu painel.
 
-Um novo projeto forçará o Railway a escanear o repositório do zero, encontrar o `railway.json` e configurar tudo corretamente.
+---
+
+### **Passo 4: Configure as Variáveis de Ambiente**
+
+Esta parte continua sendo manual e é crucial.
+
+1.  Clique no serviço `backend` e vá para a aba **Variables**.
+2.  **Conecte o Redis e o RabbitMQ**:
+    -   Crie uma nova variável chamada `REDIS_URL`. No campo de valor, clique no ícone de referência e selecione a variável do serviço Redis (ex: `${{Redis.REDIS_URL}}`).
+    -   Crie uma nova variável `RABBITMQ_URL` e referencie a variável do serviço RabbitMQ (ex: `${{RabbitMQ.AMQP_URL}}`).
+3.  **Adicione as outras variáveis**: Copie todas as outras chaves e segredos do arquivo `backend/.env.example` para as variáveis do serviço `backend`.
+4.  **Repita para o `worker`**: Vá para o serviço `worker` e adicione exatamente as mesmas variáveis que você configurou no `backend`.
+5.  **Configure o `frontend`**:
+    -   Vá para o serviço `frontend` -> **Variables**.
+    -   Crie a variável `NEXT_PUBLIC_API_URL`.
+    -   Para obter o valor, vá para o serviço `backend` -> **Settings** -> clique em **Generate Domain**. Copie a URL gerada.
+    -   Cole a URL no valor da variável `NEXT_PUBLIC_API_URL` no serviço `frontend`.
+    -   Adicione as outras variáveis do `frontend/.env.example`.
+
+---
+
+### **Passo 5: Acesse sua Aplicação**
+
+Vá para a aba **Settings** do serviço `frontend` e, se ainda não houver um domínio, clique em **Generate Domain**. Esta é a URL pública do seu site.
+
+Este método é a forma mais segura de garantir que o Railway construa seus serviços a partir dos `Dockerfile`s corretamente, contornando o erro do Nixpacks.
